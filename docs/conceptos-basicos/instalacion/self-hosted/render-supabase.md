@@ -28,29 +28,57 @@ Esta guía te mostrará cómo desplegar n8n de forma gratuita usando Render como
 3. Regístrate con tu cuenta de GitHub (recomendado)
 4. Acepta los términos y condiciones
 
-### 1.2 Crear un nuevo proyecto
+### 1.2 Crear una organización personal
 
-1. En el dashboard, haz clic en "New project"
-2. Selecciona tu organización (generalmente tu nombre de usuario)
+1. Después del registro, serás dirigido al dashboard principal
+2. Si es tu primera vez, Supabase te pedirá crear una organización:
+   - **Organization name**: Tu nombre o nombre de tu empresa (ej: "Mi Empresa Automations")
+   - **Organization type**: Selecciona **"Personal"** 
+   - **Plan**: Automáticamente se asignará el **"Free Plan"**
+   - Haz clic en "Create organization"
+
+   ![alt text](assets/supabase-create-org.png)
+
+> 💡 **Nota**: La organización es como una carpeta que contendrá todos tus proyectos. Puedes crear múltiples proyectos dentro de una organización.
+
+
+### 1.3 Crear un nuevo proyecto
+
+1. Una vez creada la organización, haz clic en "New project"
+2. Selecciona tu organización recién creada
 3. Configura el proyecto:
    - **Name**: `n8n-database` (o el nombre que prefieras)
-   - **Database Password**: Genera una contraseña segura y guárdala
-   - **Region**: Selecciona la región más cercana a ti
-   - **Pricing Plan**: Free (incluye 500MB de almacenamiento)
+   - **Database Password**: Genera una contraseña segura y **guárdala en un lugar seguro**
+   - **Region**: `East US (Ohio)`
 
 4. Haz clic en "Create new project"
-5. Espera 2-3 minutos mientras se crea el proyecto
+5. Espera 2-3 minutos mientras se aprovisiona la infraestructura
 
-### 1.3 Obtener la cadena de conexión
+![alt text](assets/supabase-create-new-project.png)
 
-1. Una vez creado el proyecto, ve a **Settings** > **Database**
-2. En la sección "Connection string", copia la URL de **URI**
-3. Reemplaza `[YOUR-PASSWORD]` con la contraseña que creaste anteriormente
-4. La URL debería verse así:
-   ```
-   postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres
-   ```
-5. **Guarda esta URL**, la necesitarás para configurar Render
+### 1.4 Verificar la creación del proyecto
+
+Una vez completado, verás:
+- ✅ **Database**: Estado "Healthy" 
+- ✅ **API**: URLs generadas automáticamente
+- ✅ **Authentication**: Configurado y listo
+- 📊 **Dashboard**: Con métricas básicas disponibles
+
+![alt text](assets/supabase-project-status.png)
+
+### 1.5 Obtener la cadena de conexión
+
+1. Una vez creado el proyecto, ve a **Connect**
+![alt text](assets/supabase-connect.png)
+
+2. En la sección "Transaction pooler", haz clic en **"View parameters"** para expandir las opciones
+3. Verás los parámetros de conexión individuales:
+   - **Host**: `aws-0-[region].pooler.supabase.com`
+   - **Database**: `postgres` 
+   - **Port**: `6543` (puerto del pooler, no el estándar 5432)
+   - **User**: `postgres.[project-ref]`
+   - **Password**: `[la-contraseña-que-creaste]`
+![alt text](assets/supabase-connection-string.png)
 
 ## Paso 2: Configurar Render (Hosting)
 
