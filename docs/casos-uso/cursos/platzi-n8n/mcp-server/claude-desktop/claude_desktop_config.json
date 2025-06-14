@@ -1,0 +1,16 @@
+{
+    "mcpServers": {
+        "n8n": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "supergateway",
+                "--sse",
+                "https://[NODO].onrender.com/mcp/MCP/sse"
+            ],
+            "env": {
+                "NODE_TLS_REJECT_UNAUTHORIZED": "0"
+            }
+        }
+    }
+}

@@ -1,0 +1,21 @@
+// Accede al campo de datos
+const file = items[0].binary?.data; // Asegúrate de que el archivo esté en el campo 'binary.data'
+
+if (file) {
+    // Extraer la extensión del archivo a partir del nombre
+    const fileExtension = file.fileName.split('.').pop().toLowerCase();
+
+    // Verificar y establecer el tipo MIME correcto
+    if (fileExtension === 'jpg' || fileExtension === 'jpeg') {
+        file.mimeType = 'image/jpeg'; // Cambiar MIME a 'image/jpeg'
+    } else if (fileExtension === 'png') {
+        file.mimeType = 'image/png'; // Cambiar MIME a 'image/png'
+    } else {
+        throw new Error("El archivo no es una imagen válida.");
+    }
+
+    // Devuelve los datos corregidos
+    return [{ binary: { data: file } }];
+} else {
+    throw new Error("No se encontraron datos binarios en el archivo.");
+}
