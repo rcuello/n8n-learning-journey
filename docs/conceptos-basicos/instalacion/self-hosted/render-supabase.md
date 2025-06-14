@@ -71,7 +71,7 @@ Una vez completado, verás:
 1. Una vez creado el proyecto, ve a **Connect**
 ![alt text](assets/supabase-connect.png)
 
-2. En la sección "Transaction pooler", haz clic en **"View parameters"** para expandir las opciones
+2. En la sección **"Transaction pooler"**, haz clic en **"View parameters"** para expandir las opciones
 3. Verás los parámetros de conexión individuales:
    - **Host**: `aws-0-[region].pooler.supabase.com`
    - **Database**: `postgres` 
