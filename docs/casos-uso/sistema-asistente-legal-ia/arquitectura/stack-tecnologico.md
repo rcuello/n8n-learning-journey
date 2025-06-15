@@ -1,0 +1,1 @@
+# Detalle del stack técnico
