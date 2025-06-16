@@ -99,14 +99,18 @@ Familiarízate con los elementos principales:
 2. Verás la página de gestión de índices (inicialmente vacía)
 3. Haz clic en **Create Index**
 
+![alt text](assets/pinecone/pinecone-create-index.png)
+
 ### 3.2 Configurar el Índice
 Completa la configuración del índice:
 
 **Información Básica:**
 - **Index Name**: Ejemplo: "n8n-embeddings" (solo minúsculas, números y guiones)
 - **Dimensions**: Número de dimensiones de tus vectores
-  - Para OpenAI text-embedding-ada-002: **1536**
+  - Para OpenAI text-embedding-3-small, utiliza: **1536**
   - Para otros modelos, consulta su documentación
+
+![alt text](assets/pinecone/pinecone-text-embedding-3-small-dimensions-1536.png)
   
 **Configuración Avanzada:**
 - **Metric**: Selecciona la métrica de distancia
@@ -116,16 +120,25 @@ Completa la configuración del índice:
   
 - **Cloud Provider**: Selecciona el proveedor de nube
   - **AWS** (recomendado para mejor rendimiento)
-  - **GCP** o **Azure** según tu preferencia
+
+![alt text](assets/pinecone/pinecone-cloud-provider.png)
 
 - **Region**: Selecciona la región más cercana a tu ubicación
-  - Para Latinoamérica: **us-east-1** o **us-west-2**
+  - Virginia **us-east-1**
+
+![alt text](assets/pinecone/pinecone-region-us-east-1.png)
 
 ### 3.3 Crear el Índice
 1. Revisa toda la configuración
 2. Haz clic en **Create Index**
+
+![alt text](assets/pinecone/pinecone-create-index-confirm.png)
+
 3. El proceso puede tomar 1-2 minutos
 4. Una vez creado, verás el estado como "Ready"
+
+![alt text](assets/pinecone/pinecone-index-ready.png)
+
 
 > **⚠️ Importante**: Las dimensiones del índice no se pueden cambiar después de creado. Asegúrate de usar el número correcto.
 
@@ -163,74 +176,66 @@ Completa la configuración del índice:
 2. En **Credentials**, haz clic en **Create New**
 3. Se abrirá el formulario de credenciales de Pinecone
 
+
+
 ### 5.3 Completar Credenciales
 Ingresa la información obtenida de Pinecone:
 
 1. **API Key**: Pega la API key que copiaste de Pinecone
-2. **Environment**: Pega el environment de Pinecone
+
 
 ### 5.4 Probar Conexión
 1. Haz clic en **Test** para verificar la conexión
 2. Si todo está correcto, verás "Connection successful"
 3. Haz clic en **Save** para guardar las credenciales
 
+![alt text](assets/pinecone/pinecone-n8n-set-api-key.png)
+
 ## Paso 6: Configurar el Nodo Pinecone
 
-### 6.1 Configuración Básica
-En el nodo Pinecone, configura:
+### 6.1 Agregar Nodo Pinecone Vector Store
+1. En tu workflow de N8N, haz clic en **+** para agregar un nodo
+2. Busca "Pinecone" en la lista de nodos
+3. Selecciona **Pinecone Vector Store**
+4. Arrastra el nodo a tu workflow
 
-**Operation**: Selecciona la operación que deseas realizar:
-- **Insert**: Para insertar vectores nuevos
-- **Load**: Para recuperar vectores existentes
-- **Query**: Para buscar vectores similares
-- **Update**: Para actualizar vectores existentes
-- **Delete**: Para eliminar vectores
+![alt text](assets/pinecone/pinecone-n8n-select-vector-store.png)
 
 **Index Name**: Ingresa el nombre del índice que creaste (ej: "n8n-embeddings")
 
-### 6.2 Configuración para Insert
-Si seleccionaste **Insert**:
-- **Vector**: Los embeddings/vectores a insertar
-- **ID**: Identificador único para cada vector
-- **Metadata**: Información adicional asociada al vector (opcional)
+### 6.2 Configurar Credenciales
+1. En la pestaña **Parameters** del nodo Pinecone Vector Store
+2. En **Credential to connect with**, haz clic en el dropdown
+3. Selecciona **Create New Credential** si es tu primera vez
+4. Se abrirá el formulario de credenciales **PineconeApi account**
 
-### 6.3 Configuración para Query
-Si seleccionaste **Query**:
-- **Vector**: El vector de consulta para buscar similares
-- **Top K**: Número de resultados más similares a devolver
-- **Include Metadata**: Si incluir metadatos en los resultados
-- **Include Values**: Si incluir los valores de los vectores
+**Completar información de credenciales:**
+1. **API Key**: Pega la API key que guardaste de Pinecone
+2. **Environment**: Ingresa tu environment de Pinecone (formato: `your-env-xxxxx.svc.pinecone.amazonaws.com`)
+3. **Name**: Dale un nombre descriptivo (ej: "Pinecone Production")
+4. Haz clic en **Save** para guardar las credenciales
 
-## Paso 7: Ejemplo de Workflow Básico
+### 6.3 Configurar Operation Mode
+En el nodo, configura:
+1. **Operation Mode**: Selecciona según tu necesidad:
+   - **Get Documents (As Vector Store for Chain/Tool)**: Para recuperar documentos como parte de una cadena
+   - **Insert Documents**: Para insertar nuevos documentos
+   - **Update Documents**: Para actualizar documentos existentes
+   - **Delete Documents**: Para eliminar documentos
 
-### 7.1 Workflow de Inserción
-Un ejemplo básico para insertar embeddings:
+### 6.4 Configurar Pinecone Index
+1. **Pinecone Index**: Selecciona **From list** 
+2. En el dropdown, selecciona el índice que creaste (ej: "n8n-embeddings")
+   - Si no aparece, verifica que las credenciales sean correctas
 
-1. **Manual Trigger** - Para activar manualmente
-2. **Code Node** - Para generar datos de ejemplo:
-```javascript
-return [
-  {
-    json: {
-      id: "doc1",
-      vector: [0.1, 0.2, 0.3, /* ... resto de 1536 dimensiones */],
-      metadata: {
-        title: "Documento 1",
-        category: "tutorial"
-      }
-    }
-  }
-];
-```
-3. **Pinecone Node** - Configurado para Insert
+### 6.5 Configurar Options
+En la sección **Options**:
+1. **Pinecone Namespace**: (Opcional) Ingresa un namespace para organizar tus vectores
+   - Ejemplo: "namespacecommerce" para e-commerce
+   - Los namespaces ayudan a segmentar datos dentro del mismo índice
+2. **Add Option**: Haz clic para agregar opciones adicionales si es necesario
 
-### 7.2 Workflow de Búsqueda
-Para buscar documentos similares:
-
-1. **Manual Trigger** - Con input para texto de búsqueda
-2. **OpenAI Node** - Para generar embedding del texto
-3. **Pinecone Node** - Para buscar vectores similares
-4. **Code Node** - Para procesar y formatear resultados
+![alt text](assets/pinecone/pinecone-n8n-options.png)
 
 ## Paso 8: Integración con OpenAI
 
