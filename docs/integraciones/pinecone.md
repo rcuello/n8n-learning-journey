@@ -237,23 +237,34 @@ En la sección **Options**:
 
 ![alt text](assets/pinecone/pinecone-n8n-options.png)
 
-## Paso 8: Integración con OpenAI
+## Paso 7: Configurar el Nodo Pinecone Vector Store
 
-### 8.1 Workflow Completo con Embeddings
-Para un sistema completo con generación de embeddings:
+### 7.1 Configuración según Operation Mode
 
-**Nodos necesarios:**
-1. **Webhook/Manual Trigger** - Entrada de datos
-2. **OpenAI Node** (Embeddings) - Generar vectores
-3. **Pinecone Node** - Almacenar o buscar
-4. **Code Node** - Procesamiento adicional
+**Para "Get Documents (As Vector Store for Chain/Tool)":**
+- Este modo se usa típicamente como parte de una cadena RAG
+- El nodo funcionará como retriever de documentos basado en similitud vectorial
+- Se conecta automáticamente con otros nodos de LangChain
 
-### 8.2 Configuración OpenAI para Embeddings
-En el nodo OpenAI:
-- **Resource**: Text
-- **Operation**: Create Embeddings
-- **Model**: text-embedding-ada-002
-- **Text**: El texto a convertir en vector
+### 7.2 Integración con Embeddings
+Si seleccionaste operaciones que requieren embeddings:
+1. En **Embedding**, selecciona tu modelo preferido:
+   - **OpenAI Embeddings** (recomendado)
+   - **Hugging Face Inference Embeddings**
+   - **Cohere Embeddings**
+2. Configura las credenciales del servicio de embeddings seleccionado
+
+### 7.3 Configuración de Namespace
+Los namespaces en Pinecone permiten:
+- **Organizar datos**: Separar diferentes tipos de contenido
+- **Aislamiento**: Búsquedas solo dentro del namespace especificado
+- **Multi-tenancy**: Separar datos por cliente o proyecto
+
+Ejemplos de namespaces:
+- `"products"` - Para catálogo de productos
+- `"support"` - Para documentación de soporte
+- `"user-123"` - Para datos específicos de usuario
+
 
 ## Resolución de Problemas Comunes
 
