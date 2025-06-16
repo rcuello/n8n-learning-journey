@@ -61,6 +61,26 @@ En la sección "Or, start with your data" puedes:
 - **Fecha**: Campo de fecha
 - **Estado**: Campo de selección única
 
+### Paso 4: Crear una nueva base manualmente (Alternativo)
+Si prefieres crear una base desde cero en cualquier momento:
+
+1. **Desde el workspace**: En tu workspace principal ("My First Workspace"), haz clic en el botón **"Create"** (aparece tanto en el centro como en la barra lateral izquierda)
+
+2. **Seleccionar tipo**: Aparecerán opciones para crear:
+   - Una nueva base desde cero
+   - Usar una plantilla
+   - Importar datos
+
+![alt text](assets/airtable/at-create-base.png)
+
+3. **Configurar la base**: 
+   - Asigna un nombre descriptivo a tu base
+![alt text](assets/airtable/at-set-base-name.png)
+   - Renombre la tabla creada por defecto
+![alt text](assets/airtable/at-rename-table.png) 
+   - Agrega las columnas/campos que necesites
+   - Define los tipos de datos (Texto, Número, Fecha, etc.)
+![alt text](assets/airtable/at-create-columns.png)
 ---
 
 
@@ -112,8 +132,9 @@ En la sección "Access", tienes dos opciones:
 Una vez configurado todo, haz clic en "Create token" (botón azul en la esquina inferior derecha)
 
 ![alt text](assets/airtable/at-create-token.png)
-
 ![alt text](assets/airtable/at-create-token-2.png)
+
+![alt text](assets/airtable/at-create-token-success.png)
 
 ### ⚠️ Importante sobre seguridad:
 - **Copia el token inmediatamente** y guárdalo en un lugar seguro
@@ -139,6 +160,9 @@ Una vez configurado todo, haz clic en "Create token" (botón azul en la esquina 
 3. **Base**: Selecciona tu base de Airtable
 4. **Table**: Selecciona la tabla específica dentro de tu base
 
+![alt text](assets/airtable/at-n8n-set-create-record.png)
+
+
 ### Paso 7: Probar la conexión
 1. Haz clic en "Execute Workflow" o "Test Step"
 2. Si todo está configurado correctamente, deberías ver:
@@ -146,6 +170,9 @@ Una vez configurado todo, haz clic en "Create token" (botón azul en la esquina 
    - Los datos de tu tabla de Airtable en el output
    - Información adicional como IDs de registros y timestamps
 
+![alt text](assets/airtable/at-n8n-test-success.png)
+
+![alt text](assets/airtable/at-create-record-success.png)
 ---
 
 ## Casos de uso comunes
