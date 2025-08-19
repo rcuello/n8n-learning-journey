@@ -1,0 +1,126 @@
+# Entorno local de n8n + PostgreSQL + Mitmproxy + Adminer + Redis
+# Pensado para estudiantes en laptops personales. Configuración centralizada en .env
+
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    restart: always
+    ports:
+      - "${N8N_PORT}:${N8N_PORT}" # UI y Webhooks
+    volumes:
+      - n8n_data:/home/node/.n8n
+      # - ./custom-nodes:/home/node/.n8n/custom-nodes # Opcional: nodos personalizados
+    environment:
+      # --- Configuración básica ---
+      - N8N_HOST=${N8N_HOST}
+      - N8N_PORT=${N8N_PORT}
+      - N8N_PROTOCOL=${N8N_PROTOCOL}
+      - WEBHOOK_URL=${WEBHOOK_URL}
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
+      - TZ=${TZ}
+
+      # --- Autenticación UI ---
+      - N8N_BASIC_AUTH_ACTIVE=${N8N_BASIC_AUTH_ACTIVE}
+      - N8N_BASIC_AUTH_USER=${N8N_UI_USER}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_UI_PASSWORD}
+
+      # --- Base de datos PostgreSQL ---
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=n8n-db
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+      - DB_POSTGRESDB_USER=${POSTGRES_USER}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+
+      # --- Redis para ejecuciones en cola ---
+      - QUEUE_BULL_REDIS_HOST=redis
+      - EXECUTIONS_PROCESS=queue
+
+      # --- Proxy (solo demostrativo, NO producción) ---
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      - HTTP_PROXY=http://mitmproxy:8080
+      - HTTPS_PROXY=http://mitmproxy:8080
+      - NO_PROXY=localhost,127.0.0.1,n8n-db,redis
+
+      # --- Logs ---
+      - N8N_LOG_LEVEL=${N8N_LOG_LEVEL}
+      - N8N_LOG_OUTPUT=${N8N_LOG_OUTPUT}
+      - CODE_ENABLE_STDOUT=${CODE_ENABLE_STDOUT}
+
+    depends_on:
+      - n8n-db
+      - redis
+
+  n8n-db:
+    image: postgres:16-alpine
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PGDATA=/var/lib/postgresql/data
+
+  mitmproxy:
+    image: mitmproxy/mitmproxy
+    restart: always
+    ports:
+      - "8080:8080" # Proxy HTTP/S
+      - "8081:8081" # Interfaz web mitmweb
+    command: mitmweb --web-host 0.0.0.0 --web-port 8081 --listen-host 0.0.0.0 --listen-port 8080 --set web_password=${MITMPROXY_WEB_PASSWORD} --ssl-insecure
+    volumes:
+      - mitmproxy_certs:/home/mitmproxy/.mitmproxy
+    environment:
+      - MITMPROXY_HOME=/home/mitmproxy/.mitmproxy
+
+  adminer:
+    image: adminer:latest
+    restart: always
+    ports:
+      - "8082:8080" # UI accesible en http://localhost:8082
+    depends_on:
+      - n8n-db
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+
+# --- Volúmenes persistentes ---
+volumes:
+  postgres_data: {}
+  n8n_data: {}
+  mitmproxy_certs: {}
+
+# 🛠️ Comandos Útiles para Docker Compose:
+# Ejemplo de comandos para manejar el entorno Docker:
+# - Iniciar los servicios en segundo plano (detached mode):
+#   docker-compose up -d
+
+# - Detener los servicios:
+#   docker-compose down
+
+# - Iniciar los servicios en segundo plano (detached mode) y reconstruir los contenedores:
+#   docker-compose up -d --build
+
+# - Forzar la recreación de contenedores (útil si cambiaste configuraciones):
+#   docker-compose up -d --force-recreate
+
+# - Ver los logs de todos los servicios:
+#   docker-compose logs -f
+
+# - Ver los logs de un servicio en particular:
+#   docker-compose logs <servicio>
+
+# - Acceder a la consola de un contenedor (por ejemplo, n8n):
+#   docker-compose exec n8n sh
+
+# - Acceder a la consola de un contenedor (por ejemplo, mitmproxy):
+#   docker-compose exec mitmproxy sh
+
+# --- Notas de Seguridad ---
+# Asegúrate de cambiar las contraseñas por defecto en el archivo .env o en los comandos de ejemplo.
+
+# n8n pwd 6G4g9hKpSCQW-Ju

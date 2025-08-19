@@ -1,7 +1,6 @@
 # N8N específico
 .n8n/
-*.env
-.env.*
+.env
 config/
 
 # Logs
