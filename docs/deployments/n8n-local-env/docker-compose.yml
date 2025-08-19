@@ -37,10 +37,10 @@ services:
       - EXECUTIONS_PROCESS=queue
 
       # --- Proxy (solo demostrativo, NO producción) ---
-      - NODE_TLS_REJECT_UNAUTHORIZED=0
-      - HTTP_PROXY=http://mitmproxy:8080
-      - HTTPS_PROXY=http://mitmproxy:8080
-      - NO_PROXY=localhost,127.0.0.1,n8n-db,redis
+      - NODE_TLS_REJECT_UNAUTHORIZED=${NODE_TLS_REJECT_UNAUTHORIZED}
+      - HTTP_PROXY=${HTTP_PROXY}
+      - HTTPS_PROXY=${HTTPS_PROXY}
+      - NO_PROXY=${NO_PROXY}
 
       # --- Logs ---
       - N8N_LOG_LEVEL=${N8N_LOG_LEVEL}
@@ -50,6 +50,8 @@ services:
     depends_on:
       - n8n-db
       - redis
+    networks:
+      - n8n_network
 
   n8n-db:
     image: postgres:16-alpine
@@ -61,38 +63,57 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - PGDATA=/var/lib/postgresql/data
+    networks:
+      - n8n_network
 
   mitmproxy:
     image: mitmproxy/mitmproxy
     restart: always
     ports:
-      - "8080:8080" # Proxy HTTP/S
-      - "8081:8081" # Interfaz web mitmweb
-    command: mitmweb --web-host 0.0.0.0 --web-port 8081 --listen-host 0.0.0.0 --listen-port 8080 --set web_password=${MITMPROXY_WEB_PASSWORD} --ssl-insecure
+      - "${MITMPROXY_PORT}:${MITMPROXY_PORT}"     # Proxy HTTP/S
+      - "${MITMPROXY_WEB_PORT}:${MITMPROXY_WEB_PORT}" # Interfaz web mitmweb
+    command: mitmweb --web-host 0.0.0.0 --web-port ${MITMPROXY_WEB_PORT} --listen-host 0.0.0.0 --listen-port ${MITMPROXY_PORT} --set web_password=${MITMPROXY_WEB_PASSWORD} --ssl-insecure
     volumes:
       - mitmproxy_certs:/home/mitmproxy/.mitmproxy
     environment:
       - MITMPROXY_HOME=/home/mitmproxy/.mitmproxy
+    networks:
+      - n8n_network
 
   adminer:
     image: adminer:latest
     restart: always
     ports:
-      - "8082:8080" # UI accesible en http://localhost:8082
+      - "${ADMINER_PORT}:8080" # UI accesible en http://localhost:${ADMINER_PORT}
     depends_on:
       - n8n-db
+    environment:
+      - ADMINER_DEFAULT_SERVER=n8n-db
+    networks:
+      - n8n_network
 
   redis:
     image: redis:7-alpine
     restart: always
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - n8n_network
 
 # --- Volúmenes persistentes ---
 volumes:
   postgres_data: {}
   n8n_data: {}
   mitmproxy_certs: {}
+  redis_data: {}
+  
+# --- Redes ---
+networks:
+  n8n_network:
+    driver: bridge
 
 # 🛠️ Comandos Útiles para Docker Compose:
 # Ejemplo de comandos para manejar el entorno Docker:
