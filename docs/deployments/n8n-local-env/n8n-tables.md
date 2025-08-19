@@ -2,70 +2,55 @@
 
 ## 📊 Introducción
 
-n8n utiliza **PostgreSQL** para almacenar toda la información sobre workflows, ejecuciones, credenciales y configuraciones.
-Esta guía describe las tablas más importantes y su propósito dentro de la plataforma.
+[n8n](https://docs.n8n.io/hosting/architecture/database-structure/#database-and-query-technology) utiliza una base de datos relacional para almacenar toda la información sobre workflows, ejecuciones, usuarios, credenciales y configuraciones.
+Por defecto, n8n usa **SQLite**, pero también es compatible con **PostgreSQL** y **MySQL/MariaDB**.
+El acceso a la base de datos y las migraciones se gestionan mediante **[TypeORM](https://github.com/typeorm/typeorm)**.
+
+Para explorar la base de datos puedes usar herramientas como [DBeaver](https://dbeaver.io).
 
 ---
 
-## 🚀 Tablas Principales (Core)
+## 🚀 Tablas de Workflows y Ejecuciones
 
 ### 📝 `workflow_entity`
 
-**Propósito**: Contiene la definición completa de todos los workflows creados en n8n, incluyendo nodos, conexiones y configuraciones.
+Contiene la definición completa de todos los workflows creados en la instancia.
+
+### 📜 `workflow_history`
+
+Guarda versiones anteriores de workflows para permitir recuperación o auditoría.
 
 ### 🔄 `execution_entity`
 
-**Propósito**: Registra cada ejecución de workflows, guardando información sobre el estado, las fechas, los datos procesados y un snapshot del workflow ejecutado.
+Almacena las ejecuciones de workflows. Dependiendo de la configuración, n8n puede guardar todas las ejecuciones o solo las fallidas/exitosas.
 
----
+### 📦 `execution_data`
 
-## 🔐 Tablas de Seguridad
-
-### 🗝️ `credentials_entity`
-
-**Propósito**: Almacena credenciales encriptadas para conexiones externas.
-
-> ⚠️ Importante: los datos están encriptados; no se exponen contraseñas en texto plano.
-
-### 🔒 `shared_credentials`
-
-**Propósito**: Gestiona qué usuarios tienen acceso a credenciales específicas y bajo qué rol.
-
-### 🤝 `shared_workflow`
-
-**Propósito**: Define los permisos de usuarios sobre workflows compartidos (propietario, editor, lector).
-
----
-
-## 🌐 Tablas de Triggers y Webhooks
-
-### 🎣 `webhook_entity`
-
-**Propósito**: Registra los webhooks activos, incluyendo la ruta, el método HTTP y el nodo que los gestiona.
-
-### 📅 `event_destinations`
-
-**Propósito**: Configuración de destinos donde se envían eventos generados por n8n.
-
----
-
-## 📈 Tablas de Metadatos y Análisis
+Registra el workflow en el momento de la ejecución y los datos procesados.
 
 ### 📊 `execution_metadata`
 
-**Propósito**: Almacena metadatos adicionales asociados a las ejecuciones.
-
-### 🏷️ `execution_annotation_tags`
-
-**Propósito**: Permite etiquetar ejecuciones para organización o clasificación.
-
-### 📝 `execution_annotations`
-
-**Propósito**: Guarda comentarios y anotaciones sobre ejecuciones específicas.
+Contiene metadatos personalizados asociados a ejecuciones.
 
 ### 📈 `workflow_statistics`
 
-**Propósito**: Contiene estadísticas de rendimiento y métricas de workflows.
+Guarda métricas y conteos sobre la ejecución de workflows.
+
+---
+
+## 🔐 Tablas de Seguridad y Acceso
+
+### 🗝️ `credentials_entity`
+
+Almacena credenciales encriptadas usadas para conectarse con servicios externos.
+
+### 🔒 `shared_credentials`
+
+Mapea credenciales a usuarios con diferentes roles (propietario, colaborador, etc.).
+
+### 🤝 `shared_workflow`
+
+Define qué usuarios tienen acceso a workflows y en qué nivel (editor, lector, etc.).
 
 ---
 
@@ -73,39 +58,35 @@ Esta guía describe las tablas más importantes y su propósito dentro de la pla
 
 ### 👤 `user`
 
-**Propósito**: Información básica de los usuarios del sistema, incluyendo datos de identificación y autenticación.
+Contiene los datos de usuarios registrados en la instancia.
 
 ### 🔑 `auth_identity`
 
-**Propósito**: Relaciona usuarios con identidades de autenticación.
+Almacena identidades externas de autenticación (por ejemplo, cuando se usa SAML).
 
 ### 📜 `auth_provider_sync_history`
 
-**Propósito**: Historial de sincronización con proveedores de identidad externos.
+Historial de sincronizaciones con proveedores de autenticación (como SAML).
 
 ### 🚫 `invalid_auth_token`
 
-**Propósito**: Lista tokens de autenticación que fueron invalidados.
+Registra tokens de autenticación que han sido invalidados.
+
+### 🛠️ `role`
+
+Actualmente no se utiliza, reservado para futuras funciones de roles personalizados.
 
 ---
 
-## 🛠️ Tablas de Configuración
+## 🌐 Tablas de Triggers y Webhooks
 
-### ⚙️ `settings`
+### 🎣 `webhook_entity`
 
-**Propósito**: Configuraciones globales del sistema.
+Registra todos los webhooks activos en workflows. Incluye no solo los nodos Webhook, sino también cualquier nodo disparador que use webhooks.
 
-### 🧩 `installed_nodes`
+### 📅 `event_destinations`
 
-**Propósito**: Registra nodos personalizados que fueron instalados en la plataforma.
-
-### 📦 `installed_packages`
-
-**Propósito**: Guarda información de los paquetes npm instalados en el entorno.
-
-### 🔄 `migrations`
-
-**Propósito**: Controla el estado de las migraciones de base de datos aplicadas.
+Configura destinos para streaming de logs y otros eventos del sistema.
 
 ---
 
@@ -113,27 +94,47 @@ Esta guía describe las tablas más importantes y su propósito dentro de la pla
 
 ### 🏷️ `tag_entity`
 
-**Propósito**: Almacena tags para clasificar workflows.
+Lista de tags creados en la instancia.
 
-### 🔗 `workflow_tag_mapping`
+### 🔗 `workflows_tags`
 
-**Propósito**: Relación entre workflows y sus tags correspondientes.
-
----
-
-## 📂 Tablas de Proyectos y Variables
+Mapea tags a workflows.
 
 ### 📁 `project`
 
-**Propósito**: Representa proyectos como contenedores de organización.
+Representa proyectos que agrupan recursos dentro de la instancia.
 
 ### 🔗 `project_relation`
 
-**Propósito**: Define relaciones entre proyectos y recursos.
+Define relaciones entre proyectos y usuarios, incluyendo roles.
+
+---
+
+## 🛠️ Tablas de Configuración y Extensiones
+
+### ⚙️ `settings`
+
+Contiene configuraciones globales de la instancia que no dependen de variables de entorno, como:
+
+* Estado del propietario de la instancia
+* Opciones de autenticación habilitadas (SAML, LDAP, etc.)
+* Clave de licencia
+
+### 🧩 `installed_nodes`
+
+Lista los nodos de la comunidad instalados en la instancia.
+
+### 📦 `installed_packages`
+
+Detalla los paquetes npm instalados. Un paquete puede contener uno o más nodos.
+
+### 🔄 `migrations`
+
+Registro de todas las migraciones de base de datos aplicadas.
 
 ### 🔧 `variables`
 
-**Propósito**: Contiene variables globales definidas en el sistema.
+Almacena variables globales definidas en la instancia.
 
 ---
 
@@ -141,32 +142,36 @@ Esta guía describe las tablas más importantes y su propósito dentro de la pla
 
 ### 🧪 `test_case_execution`
 
-**Propósito**: Guarda los resultados de ejecuciones de casos de prueba.
+Registra las ejecuciones de casos de prueba.
 
 ### 🏃 `test_run`
 
-**Propósito**: Almacena la información de ejecuciones de conjuntos de pruebas.
+Almacena la ejecución de conjuntos de pruebas.
 
 ---
 
-## 💡 Tips y Mejores Prácticas
+## 🗺️ Visión General de Relaciones
 
-* Para debugging, las tablas más útiles son: `execution_entity`, `execution_metadata` y `workflow_entity`.
-* Para análisis, combina información de `workflow_entity`, `execution_entity` y `workflow_statistics`.
-* En seguridad, nunca intentes desencriptar credenciales directamente en `credentials_entity`.
-* Antes de modificar cualquier dato en estas tablas, considera los riesgos y realiza respaldos.
+n8n mantiene un esquema relacional donde:
 
----
+* **Workflows** (`workflow_entity`) se conectan con **ejecuciones** (`execution_entity`) y **webhooks** (`webhook_entity`).
+* **Usuarios** (`user`) se relacionan con **workflows** y **credenciales** mediante tablas de compartición (`shared_workflow`, `shared_credentials`).
+* **Tags** (`tag_entity`) y **proyectos** (`project`) permiten organizar workflows y recursos.
+* **Configuraciones**, **variables** y **nodos instalados** permiten personalizar la instancia.
 
-## ⚠️ Precauciones
+👉 La documentación oficial incluye un **[diagrama entidad-relación (ERD)](https://docs.n8n.io/hosting/architecture/database-structure/#database-and-query-technology)** que muestra gráficamente estas relaciones.
 
-* No modificar registros directamente sin comprender las implicaciones.
-* Hacer backups periódicos de la base de datos.
-* Tener cuidado con el tamaño de campos como `data` en `execution_entity`, ya que pueden ser muy grandes.
-* Evitar consultas complejas sobre tablas de gran tamaño sin índices adecuados.
+![Modelo entidad-relacion de n8n](modelo-er.png)
 
 ---
 
-✅ Con esta guía tendrás una visión clara de cómo n8n organiza y almacena la información en PostgreSQL, sin depender de columnas específicas que puedan cambiar en futuras versiones.
+## ⚠️ Recomendaciones
 
+* Evita modificar directamente los datos en la base sin entender las consecuencias.
+* Realiza **backups periódicos** antes de cualquier cambio estructural.
+* Considera que algunas tablas, como `execution_data`, pueden crecer rápidamente y afectar el rendimiento.
+* Usa índices o herramientas de análisis solo en entornos de prueba antes de aplicar en producción.
 
+---
+
+✅ Con esta guía tienes una visión consolidada de la estructura de la base de datos de n8n, alineada con la documentación oficial y organizada por categorías prácticas.
