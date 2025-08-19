@@ -2,6 +2,7 @@
 .n8n/
 .env
 config/
+.docker-volume
 
 # Logs
 logs/

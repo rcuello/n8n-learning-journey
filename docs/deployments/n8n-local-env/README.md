@@ -157,15 +157,15 @@ Una vez conectado, explorar estas tablas principales:
 
 **Tabla `execution_entity`**:
 ```sql
-SELECT id, workflowId, mode, status, startedAt, stoppedAt 
+SELECT id, "workflowId", mode, status, "startedAt", "stoppedAt" 
 FROM execution_entity 
-ORDER BY startedAt DESC 
+ORDER BY "startedAt" DESC 
 LIMIT 10;
 ```
 
 **Tabla `workflow_entity`**:
 ```sql
-SELECT id, name, active, created_at, updated_at 
+SELECT id, name, active, "createdAt", "updatedAt"
 FROM workflow_entity;
 ```
 
