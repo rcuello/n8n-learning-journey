@@ -161,7 +161,7 @@ n8n mantiene un esquema relacional donde:
 
 👉 La documentación oficial incluye un **[diagrama entidad-relación (ERD)](https://docs.n8n.io/hosting/architecture/database-structure/#database-and-query-technology)** que muestra gráficamente estas relaciones.
 
-![Modelo entidad-relacion de n8n](modelo-er.png)
+![Modelo entidad-relacion de n8n](./modelo-er.png)
 
 ---
 

@@ -47,7 +47,7 @@ Esta guía te mostrará cómo desplegar n8n de forma gratuita usando Render como
 1. Una vez creada la organización, haz clic en "New project"
 2. Selecciona tu organización recién creada
 3. Configura el proyecto:
-   - **Name**: `n8n-database` (o el nombre que prefieras)
+   - **Name**: `n8n-database` (o-el-nombre-que-prefieras)
    - **Database Password**: Genera una contraseña segura y **guárdala en un lugar seguro**
    - **Region**: `East US (Ohio)`
 
@@ -59,6 +59,7 @@ Esta guía te mostrará cómo desplegar n8n de forma gratuita usando Render como
 ### 1.4 Verificar la creación del proyecto
 
 Una vez completado, verás:
+
 - ✅ **Database**: Estado "Healthy" 
 - ✅ **API**: URLs generadas automáticamente
 - ✅ **Authentication**: Configurado y listo
@@ -75,7 +76,7 @@ Una vez completado, verás:
 3. Verás los parámetros de conexión individuales:
    - **Host**: `aws-0-[region].pooler.supabase.com`
    - **Database**: `postgres` 
-   - **Port**: `6543` (puerto del pooler, no el estándar 5432)
+   - **Port**: `6543` (puerto-del-pooler, no-el-estándar-5432)
    - **User**: `postgres.[project-ref]`
    - **Password**: `[la-contraseña-que-creaste]`
 ![alt text](assets/supabase-connection-string.png)
@@ -104,9 +105,9 @@ Una vez completado, verás:
 ![alt text](assets/render-existing-image.png)
 
 5. Configura el servicio:
-   - **Name**: `n8n-app` (o tu nombre preferido)
+   - **Name**: `n8n-app` (o-tu-nombre-preferido)
    - **Project**: Haz clic en "Create new project" si quieres organizar mejor tus servicios
-      - **Project name**: `n8n-automation-suite` (o el nombre que prefieras)
+      - **Project name**: `n8n-automation-suite` (o-el-nombre-que prefieras)
       - **Environment name**: `Production`
 
       ![alt text](assets/render-create-project.png)
@@ -271,3 +272,8 @@ El plan gratuito de Render "duerme" después de 15 minutos de inactividad:
 ---
 
 > 💡 **Tip**: Guarda todas las credenciales y URLs en un gestor de contraseñas seguro. Necesitarás acceso a ellas para futuras configuraciones y mantenimiento.
+
+---
+
+✍️ Autor: **Profesor Ronald Cuello**  
+📍 Colombia – 2025
